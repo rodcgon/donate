@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Doações Crypto</title>
+<style>
+body{font-family:system-ui,Arial;margin:32px;background:#fff;color:#111}
+.card{border:1px solid #eee;padding:18px;margin:12px 0;border-radius:8px;display:flex;align-items:center;gap:16px}
+.addr{font-family:monospace;word-break:break-all}
+.btn{padding:8px 12px;border:0;background:#111;color:#fff;border-radius:6px;cursor:pointer}
+.qr{width:96px;height:96px}
+</style>
+</head>
+<body>
+<h1>Doações</h1>
+
+<div class="card" data-addr="tron:TXXXXXXXXXXXXXXXXXXXX" data-label="TRON">
+  <div>
+    <strong>TRON</strong>
+    <div class="addr">tron:TXXXXXXXXXXXXXXXXXXXX</div>
+  </div>
+  <div id="qr-tron" class="qr"></div>
+  <button class="btn copy">Copiar</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+document.querySelectorAll('.card').forEach(card=>{
+  const addr = card.dataset.addr;
+  const id = 'qr-'+card.dataset.label.toLowerCase();
+  new QRCode(card.querySelector('.qr'), {text:addr,width:96,height:96});
+  card.querySelector('.copy').addEventListener('click',()=>navigator.clipboard.writeText(addr));
+});
+</script>
+</body>
+</html>
