@@ -16,7 +16,7 @@
   .actions{display:flex;flex-direction:column;gap:8px;align-items:flex-end}
   .btn{background:var(--accent);color:#fff;border:0;padding:8px 12px;border-radius:8px;cursor:pointer;font-weight:600}
   .linkbtn{background:#fff;color:var(--accent);border:1px solid #ddd;padding:8px 12px;border-radius:8px;cursor:pointer;text-decoration:none}
-  .qr{width:96px;height:96px}
+  .qr{width:96px;height:96px;display:flex;align-items:center;justify-content:center}
   footer{margin-top:18px;color:var(--muted);font-size:0.9rem}
   @media(max-width:560px){.card{flex-direction:column;align-items:flex-start}.actions{width:100%;flex-direction:row;justify-content:space-between}}
 </style>
@@ -25,102 +25,17 @@
 <div class="grid">
   <h1>Doações</h1>
 
-  <div class="card" data-addr="https://dentpeg.com/checkout/pluginsgis-rcg" data-type="pix" data-label="PIX">
+  <!-- PIX: apenas link, sem QR -->
+  <div class="card" data-type="pix" data-label="PIX">
     <div class="meta">
       <div class="label">PIX</div>
       <div class="addr">https://dentpeg.com/checkout/pluginsgis-rcg</div>
     </div>
-    <div class="qr" id="qr-pix"></div>
+    <div class="qr" aria-hidden="true"></div>
     <div class="actions">
-      <button class="btn copy">Copiar</button>
-      <a class="linkbtn open" href="#" target="_blank" rel="noopener">Abrir</a>
+      <button class="btn copy" data-copy="https://dentpeg.com/checkout/pluginsgis-rcg">Copiar</button>
+      <a class="linkbtn open" href="https://dentpeg.com/checkout/pluginsgis-rcg" target="_blank" rel="noopener">Abrir</a>
     </div>
   </div>
 
-  <div class="card" data-addr="tron:TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2" data-type="tron" data-label="USDT TRON">
-    <div class="meta">
-      <div class="label">USDT TRC20</div>
-      <div class="addr">TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2</div>
-    </div>
-    <div class="qr" id="qr-tron"></div>
-    <div class="actions">
-      <button class="btn copy">Copiar</button>
-      <a class="linkbtn open" href="#" target="_blank" rel="noopener">Abrir</a>
-    </div>
-  </div>
-
-  <div class="card" data-addr="lightning:cryingpropane83@walletofsatoshi.com" data-type="lightning" data-label="BTC Lightning">
-    <div class="meta">
-      <div class="label">Bitcoin Lightning</div>
-      <div class="addr">cryingpropane83@walletofsatoshi.com</div>
-    </div>
-    <div class="qr" id="qr-lightning"></div>
-    <div class="actions">
-      <button class="btn copy">Copiar</button>
-      <a class="linkbtn open" href="#" target="_blank" rel="noopener">Abrir</a>
-    </div>
-  </div>
-
-  <footer>
-    <strong>Nota</strong> Use apenas endereços públicos. Não publique chaves privadas.
-  </footer>
-</div>
-
-<script>
-/* QR generator minimal (no CDN) - tiny implementation using canvas */
-function makeQRCanvas(text, size=96){
-  // Usa biblioteca QRCode mínima se disponível, caso contrário gera link para API de QR temporária
-  // Para privacidade, prefer usar a lib local; aqui tentamos usar uma lib embutida simples.
-  try{
-    // Se QRCode estiver definido (caso você adicione qrcode.min.js), use-o
-    if(window.QRCode){ const el=document.createElement('div'); new QRCode(el,{text:text,width:size,height:size}); return el.firstChild; }
-  }catch(e){}
-  // fallback: gera imagem via API pública (útil para teste). Troque por lib local em produção.
-  const img = document.createElement('img');
-  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+'&data='+encodeURIComponent(text);
-  img.alt = text;
-  img.width = size; img.height = size;
-  return img;
-}
-
-document.querySelectorAll('.card').forEach(card=>{
-  const addr = card.dataset.addr;
-  const type = card.dataset.type;
-  const label = card.dataset.label.toLowerCase();
-  const qrContainer = card.querySelector('.qr');
-  const addrEl = card.querySelector('.addr');
-  const copyBtn = card.querySelector('.copy');
-  const openLink = card.querySelector('.open');
-
-  // preencher QR
-  const qrEl = makeQRCanvas(addr,96);
-  qrContainer.appendChild(qrEl);
-
-  // copiar para clipboard
-  copyBtn.addEventListener('click', async ()=>{
-    try{
-      await navigator.clipboard.writeText(addr.replace(/^tron:/i,'').replace(/^lightning:/i,''));
-      copyBtn.textContent = 'Copiado';
-      setTimeout(()=>copyBtn.textContent='Copiar',1200);
-    }catch(e){
-      copyBtn.textContent = 'Erro';
-      setTimeout(()=>copyBtn.textContent='Copiar',1200);
-    }
-  });
-
-  // abrir link adequado
-  if(type==='pix'){
-    openLink.href = addr;
-  } else if(type==='tron'){
-    // tenta abrir URI tron: para carteiras; também fornece link de fallback para exibir o endereço
-    openLink.href = 'tron:'+addrEl.textContent;
-  } else if(type==='lightning'){
-    // abre lightning: URI ou mailto-like LN address handler
-    openLink.href = 'lightning:'+addrEl.textContent;
-  } else {
-    openLink.href = addr;
-  }
-});
-</script>
-</body>
-</html>
+  <!-- USDT TRON: QR com apenas o endereço (sem 'tron:'), copiar endereço puro, abrir usa tron:URI -->
