@@ -39,3 +39,80 @@
   </div>
 
   <!-- USDT TRON: QR com apenas o endereço (sem 'tron:'), copiar endereço puro, abrir usa tron:URI -->
+  <div class="card" data-addr="TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2" data-type="tron" data-label="USDT TRON">
+    <div class="meta">
+      <div class="label">USDT TRC20</div>
+      <div class="addr">TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2</div>
+    </div>
+    <div class="qr" id="qr-tron"></div>
+    <div class="actions">
+      <button class="btn copy" data-copy="TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2">Copiar</button>
+      <a class="linkbtn open" href="tron:TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2" target="_blank" rel="noopener">Abrir</a>
+    </div>
+  </div>
+
+  <!-- BTC Lightning: QR com apenas o invoice/handle (sem 'lightning:'), copiar endereço puro, abrir usa lightning:URI -->
+  <div class="card" data-addr="cryingpropane83@walletofsatoshi.com" data-type="lightning" data-label="BTC Lightning">
+    <div class="meta">
+      <div class="label">Bitcoin Lightning</div>
+      <div class="addr">cryingpropane83@walletofsatoshi.com</div>
+    </div>
+    <div class="qr" id="qr-lightning"></div>
+    <div class="actions">
+      <button class="btn copy" data-copy="cryingpropane83@walletofsatoshi.com">Copiar</button>
+      <a class="linkbtn open" href="lightning:cryingpropane83@walletofsatoshi.com" target="_blank" rel="noopener">Abrir</a>
+    </div>
+  </div>
+
+  <footer>
+    <strong>Nota</strong> Use apenas endereços públicos. Não publique chaves privadas.
+  </footer>
+</div>
+
+<script>
+/* Gera QR usando API pública como fallback. Para privacidade, substitua por qrcode.min.js local. */
+function makeQRImage(text, size=96){
+  const img = document.createElement('img');
+  img.src = 'https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+'&data='+encodeURIComponent(text);
+  img.alt = text;
+  img.width = size; img.height = size;
+  return img;
+}
+
+/* Inicialização */
+document.addEventListener('DOMContentLoaded', ()=>{
+  // PIX: não gerar QR (já deixado vazio)
+  // Para TRON e LIGHTNING: gerar QR com APENAS o endereço (data-addr)
+  document.querySelectorAll('.card[data-addr]').forEach(card=>{
+    const addr = card.dataset.addr; // endereço puro, sem prefixo
+    const type = card.dataset.type;
+    const qrContainer = card.querySelector('.qr');
+    if(qrContainer){
+      // Para TRON e Lightning geramos QR com o endereço puro
+      const qrEl = makeQRImage(addr, 96);
+      qrContainer.appendChild(qrEl);
+    }
+  });
+
+  // Copiar: todos os botões têm atributo data-copy com o texto a copiar (PIX usa URL)
+  document.querySelectorAll('.copy').forEach(btn=>{
+    btn.addEventListener('click', async ()=>{
+      const text = btn.dataset.copy || '';
+      try{
+        await navigator.clipboard.writeText(text);
+        const original = btn.textContent;
+        btn.textContent = 'Copiado';
+        setTimeout(()=>btn.textContent = original, 1200);
+      }catch(e){
+        const original = btn.textContent;
+        btn.textContent = 'Erro';
+        setTimeout(()=>btn.textContent = original, 1200);
+      }
+    });
+  });
+
+  // Links "Abrir" já configurados no HTML: PIX -> URL, TRON -> tron:URI, LIGHTNING -> lightning:URI
+});
+</script>
+</body>
+</html>
