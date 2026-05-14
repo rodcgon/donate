@@ -67,7 +67,7 @@
 
     <!-- BARRA DE PROGRESSO -->
     <div id="progresso-container" class="progress-wrap" aria-live="polite">
-      <h2>Andamento para o próximo Plugin: Cota de Inundação:</h2>
+      <h2>Andamento do financiamento para o próximo Plugin: Cota de Inundação:</h2>
 
       <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progresso de doação">
         <div id="barra-progresso" class="progress-fill">0%</div>
@@ -249,7 +249,7 @@ async function carregarProgresso(){
     const acumuladoFmt = acumulado.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
     const totalFmt = total.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
 
-    meta.textContent = `${acumuladoFmt} de ${totalFmt} — ${pct}% concluído`;
+    meta.textContent = `${pct}% concluído`;
 
   } catch (err) {
     // Em caso de erro, mostrar mensagem amigável e manter barra em 0
