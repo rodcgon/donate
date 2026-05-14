@@ -3,12 +3,50 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Endereços/ Addresses</title>
+<title>Endereços / Doações</title>
 <style>
-  :root{--bg:#ffffff;--fg:#0b0b0b;--muted:#666;--accent:#111}
-  body{font-family:system-ui,Arial,Helvetica,sans-serif;background:var(--bg);color:var(--fg);margin:28px;line-height:1.35}
+  :root{
+    --bg:#ffffff;
+    --fg:#0b0b0b;
+    --muted:#666;
+    --accent:#111;
+    --progress-bg:#eee;
+    --progress-fill:#4caf50;
+  }
+  body{
+    font-family:system-ui,Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--fg);
+    margin:28px;
+    line-height:1.35;
+  }
+  .container{max-width:720px;margin:0 auto}
   h1{font-size:1.2rem;margin-bottom:12px}
-  .grid{max-width:720px;margin:0 auto}
+  h2{font-size:1.05rem;margin:0 0 10px 0}
+  .progress-wrap{margin:0 0 24px 0}
+  .progress-bar{
+    background:var(--progress-bg);
+    border-radius:10px;
+    overflow:hidden;
+    height:26px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.6);
+  }
+  .progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--progress-fill),#2e8b57);
+    transition:width 1s ease;
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    padding-right:10px;
+    color:#fff;
+    font-weight:700;
+    font-size:0.95rem;
+    box-sizing:border-box;
+  }
+  .progress-meta{margin-top:8px;color:var(--muted);font-weight:600}
+  .grid{max-width:720px;margin:12px auto 0 auto}
   .card{display:flex;align-items:center;gap:14px;border:1px solid #eee;padding:14px;border-radius:10px;margin:12px 0}
   .meta{flex:1}
   .label{font-weight:700;margin-bottom:6px}
@@ -18,82 +56,127 @@
   .linkbtn{background:#fff;color:var(--accent);border:1px solid #ddd;padding:8px 12px;border-radius:8px;cursor:pointer;text-decoration:none}
   .qr{width:96px;height:96px;display:flex;align-items:center;justify-content:center}
   footer{margin-top:18px;color:var(--muted);font-size:0.9rem}
-  @media(max-width:560px){.card{flex-direction:column;align-items:flex-start}.actions{width:100%;flex-direction:row;justify-content:space-between}}
+  @media(max-width:560px){
+    .card{flex-direction:column;align-items:flex-start}
+    .actions{width:100%;flex-direction:row;justify-content:space-between}
+  }
 </style>
 </head>
 <body>
-<div class="grid">
-  <h1>Endereços/ Addresses</h1>
+  <div class="container">
 
-  <!-- PIX: apenas link, sem QR -->
-  <div class="card" data-type="pix" data-label="PIX">
-    <div class="meta">
-      <div class="label">PIX</div>
-      <div class="addr">https://dentpeg.com/checkout/pluginsgis-rcg</div>
+    <!-- BARRA DE PROGRESSO -->
+    <div id="progresso-container" class="progress-wrap" aria-live="polite">
+      <h2>Andamento para o próximo Plugin: Cota de Inundação:</h2>
+
+      <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Progresso de doação">
+        <div id="barra-progresso" class="progress-fill">0%</div>
+      </div>
+
+      <div id="progresso-meta" class="progress-meta">Carregando valores de doação...</div>
     </div>
-    <div class="qr" aria-hidden="true"></div>
-    <div class="actions">
-      <button class="btn copy" data-copy="https://dentpeg.com/checkout/pluginsgis-rcg">Copiar</button>
-      <a class="linkbtn open" href="https://dentpeg.com/checkout/pluginsgis-rcg" target="_blank" rel="noopener">Abrir</a>
+
+    <div class="grid">
+      <h1>Endereços / Addresses</h1>
+
+      <!-- PIX: apenas link, sem QR -->
+      <div class="card" data-type="pix" data-label="PIX">
+        <div class="meta">
+          <div class="label">PIX</div>
+          <div class="addr">https://dentpeg.com/checkout/pluginsgis-rcg</div>
+        </div>
+        <div class="qr" aria-hidden="true"></div>
+        <div class="actions">
+          <button class="btn copy" data-copy="https://dentpeg.com/checkout/pluginsgis-rcg">Copiar</button>
+          <a class="linkbtn open" href="https://dentpeg.com/checkout/pluginsgis-rcg" target="_blank" rel="noopener">Abrir</a>
+        </div>
+      </div>
+
+      <!-- USDT TRON: QR com apenas o endereço (sem 'tron:'), copiar endereço puro, abrir usa tron:URI -->
+      <div class="card" data-addr="TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2" data-type="tron" data-label="USDT TRON">
+        <div class="meta">
+          <div class="label">USDT TRC20 - TRON</div>
+          <div class="addr">TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2</div>
+        </div>
+        <div class="qr" id="qr-tron"></div>
+        <div class="actions">
+          <button class="btn copy" data-copy="TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2">Copiar</button>
+          <a class="linkbtn open" href="tron:TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2" target="_blank" rel="noopener">Abrir</a>
+        </div>
+      </div>
+
+      <!-- BTC Lightning: QR com apenas o invoice/handle (sem 'lightning:'), copiar endereço puro, abrir usa lightning:URI -->
+      <div class="card" data-addr="cryingpropane83@walletofsatoshi.com" data-type="lightning" data-label="BTC Lightning">
+        <div class="meta">
+          <div class="label">BTC Lightning</div>
+          <div class="addr">cryingpropane83@walletofsatoshi.com</div>
+        </div>
+        <div class="qr" id="qr-lightning"></div>
+        <div class="actions">
+          <button class="btn copy" data-copy="cryingpropane83@walletofsatoshi.com">Copiar</button>
+          <a class="linkbtn open" href="lightning:cryingpropane83@walletofsatoshi.com" target="_blank" rel="noopener">Abrir</a>
+        </div>
+      </div>
+
+      <footer>
+        Obrigado pelo apoio.
+      </footer>
     </div>
   </div>
-
-  <!-- USDT TRON: QR com apenas o endereço (sem 'tron:'), copiar endereço puro, abrir usa tron:URI -->
-  <div class="card" data-addr="TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2" data-type="tron" data-label="USDT TRON">
-    <div class="meta">
-      <div class="label">USDT TRC20 - TRON</div>
-      <div class="addr">TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2</div>
-    </div>
-    <div class="qr" id="qr-tron"></div>
-    <div class="actions">
-      <button class="btn copy" data-copy="TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2">Copiar</button>
-      <a class="linkbtn open" href="tron:TSMgEtSWjXbCM68RVJZj5kFPdh6GPLc5C2" target="_blank" rel="noopener">Abrir</a>
-    </div>
-  </div>
-
-  <!-- BTC Lightning: QR com apenas o invoice/handle (sem 'lightning:'), copiar endereço puro, abrir usa lightning:URI -->
-  <div class="card" data-addr="cryingpropane83@walletofsatoshi.com" data-type="lightning" data-label="BTC Lightning">
-    <div class="meta">
-      <div class="label">BTC Lightning</div>
-      <div class="addr">cryingpropane83@walletofsatoshi.com</div>
-    </div>
-    <div class="qr" id="qr-lightning"></div>
-    <div class="actions">
-      <button class="btn copy" data-copy="cryingpropane83@walletofsatoshi.com">Copiar</button>
-      <a class="linkbtn open" href="lightning:cryingpropane83@walletofsatoshi.com" target="_blank" rel="noopener">Abrir</a>
-    </div>
-  </div>
-
-  <footer>
-  </footer>
-</div>
 
 <script>
+/* ---------- Funções utilitárias ---------- */
+
+/**
+ * Tenta interpretar números no formato brasileiro ou internacional.
+ * Exemplos aceitos:
+ *  "R$ 1.234,56" -> 1234.56
+ *  "1234.56"     -> 1234.56
+ *  "10,00"       -> 10.00
+ *  "R$10,00"     -> 10.00
+ */
+function parseNumberFlexible(str){
+  if(!str) return NaN;
+  // Remove R$, espaços e caracteres extras (exceto dígitos, ponto e vírgula, e sinal)
+  let s = String(str).replace(/R\$\s?/gi,'').trim();
+  // Remove qualquer caractere que não seja dígito, ponto, vírgula ou sinal
+  s = s.replace(/[^\d\.,\-]/g, '');
+  // Se contém vírgula e ponto, assumimos que ponto é separador de milhares e vírgula decimal
+  if(s.indexOf(',') !== -1 && s.indexOf('.') !== -1){
+    s = s.replace(/\./g, '');      // remove milhares
+    s = s.replace(/,/g, '.');      // vírgula -> ponto decimal
+  } else if(s.indexOf(',') !== -1 && s.indexOf('.') === -1){
+    // apenas vírgula -> decimal
+    s = s.replace(/,/g, '.');
+  } // caso contrário, assume formato com ponto decimal ou inteiro
+  const n = parseFloat(s);
+  return isNaN(n) ? NaN : n;
+}
+
 /* Gera QR usando API pública como fallback. Para privacidade, substitua por qrcode.min.js local. */
 function makeQRImage(text, size=96){
   const img = document.createElement('img');
   img.src = 'https://api.qrserver.com/v1/create-qr-code/?size='+size+'x'+size+'&data='+encodeURIComponent(text);
   img.alt = text;
   img.width = size; img.height = size;
+  img.style.borderRadius = '6px';
   return img;
 }
 
-/* Inicialização */
+/* ---------- Inicialização da página ---------- */
 document.addEventListener('DOMContentLoaded', ()=>{
-  // PIX: não gerar QR (já deixado vazio)
-  // Para TRON e LIGHTNING: gerar QR com APENAS o endereço (data-addr)
+
+  /* 1) Gerar QRs para cards com data-addr */
   document.querySelectorAll('.card[data-addr]').forEach(card=>{
     const addr = card.dataset.addr; // endereço puro, sem prefixo
-    const type = card.dataset.type;
     const qrContainer = card.querySelector('.qr');
     if(qrContainer){
-      // Para TRON e Lightning geramos QR com o endereço puro
       const qrEl = makeQRImage(addr, 96);
       qrContainer.appendChild(qrEl);
     }
   });
 
-  // Copiar: todos os botões têm atributo data-copy com o texto a copiar (PIX usa URL)
+  /* 2) Botões de copiar */
   document.querySelectorAll('.copy').forEach(btn=>{
     btn.addEventListener('click', async ()=>{
       const text = btn.dataset.copy || '';
@@ -110,8 +193,73 @@ document.addEventListener('DOMContentLoaded', ()=>{
     });
   });
 
-  // Links "Abrir" já configurados no HTML: PIX -> URL, TRON -> tron:URI, LIGHTNING -> lightning:URI
+  /* 3) Carregar arquivo de doação e atualizar barra de progresso */
+  carregarProgresso();
+
 });
+
+/* ---------- Função que lê doacao.txt e atualiza a barra ---------- */
+async function carregarProgresso(){
+  const barra = document.getElementById('barra-progresso');
+  const meta = document.getElementById('progresso-meta');
+
+  try {
+    const resp = await fetch('doacao.txt', {cache: "no-store"});
+    if(!resp.ok){
+      throw new Error('Arquivo não encontrado');
+    }
+    const texto = await resp.text();
+    // Pegar a primeira linha não vazia
+    const linhas = texto.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+    if(linhas.length === 0){
+      throw new Error('Arquivo vazio');
+    }
+    // Suporta CSV simples: acumulado,total
+    const primeira = linhas[0];
+    // Se houver mais de duas colunas, consideramos apenas as duas primeiras
+    const partes = primeira.split(',').map(p=>p.trim());
+    if(partes.length < 2){
+      // Talvez o separador seja ponto-e-vírgula
+      const partesAlt = primeira.split(';').map(p=>p.trim());
+      if(partesAlt.length >= 2){
+        partes.splice(0, partes.length, ...partesAlt);
+      }
+    }
+    const acumuladoRaw = partes[0] || '0';
+    const totalRaw = partes[1] || '0';
+
+    const acumulado = parseNumberFlexible(acumuladoRaw);
+    const total = parseNumberFlexible(totalRaw);
+
+    if(isNaN(acumulado) || isNaN(total) || total <= 0){
+      throw new Error('Valores inválidos no arquivo');
+    }
+
+    let pct = Math.round((acumulado / total) * 100);
+    if(!isFinite(pct)) pct = 0;
+    if(pct < 0) pct = 0;
+    if(pct > 100) pct = 100;
+
+    // Atualiza barra e atributos ARIA
+    barra.style.width = pct + '%';
+    barra.setAttribute('aria-valuenow', String(pct));
+    barra.textContent = pct + '%';
+
+    // Formata valores em BRL
+    const acumuladoFmt = acumulado.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+    const totalFmt = total.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+
+    meta.textContent = `${acumuladoFmt} de ${totalFmt} — ${pct}% concluído`;
+
+  } catch (err) {
+    // Em caso de erro, mostrar mensagem amigável e manter barra em 0
+    barra.style.width = '0%';
+    barra.setAttribute('aria-valuenow', '0');
+    barra.textContent = '0%';
+    meta.textContent = 'Não foi possível carregar o progresso: ' + (err.message || 'erro desconhecido');
+    console.error(err);
+  }
+}
 </script>
 </body>
 </html>
